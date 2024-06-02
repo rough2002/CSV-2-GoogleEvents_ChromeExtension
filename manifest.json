@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Event Generator",
+  "version": "1.0.0",
+  "action": { "default_popup": "index.html" },
+  "permissions": ["identity"],
+  "oauth2": {
+    "client_id": "112465121019-e6mafbk434bcfd3jmo75hdap01m86tpv.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/tasks"
+    ]
+  },
+
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  }
+}
