@@ -25,11 +25,9 @@ export const findSlotFrame = (headings, start) => {
 
 export const filteredClients = (clientsData) => {
   const headers = clientsData.slice(0, 1);
-  console.log(clientsData.slice(1));
   const filteredClients = clientsData.slice(1).filter((row) => {
     if (!row[1]) return false;
     if (!row[1].trim()) return false;
-    console.log(row[3], row[4], row[0]);
     const adhoc = row[3] ? row[3].trim().toLowerCase() : "";
     const status = row[4].trim().toLowerCase();
     return (adhoc === "no" || adhoc === "") && status === "active";
@@ -59,8 +57,7 @@ export const parseSlots = (slot) => {
 
     return { startTime, endTime, days };
   } else {
-    console.error(slot, "Error happened here");
-    return null; // Return null if slot does not match the expected format
+    console.error(slot, "Error happened while detecting slot");
   }
 };
 
@@ -109,7 +106,6 @@ export const generateEvents = (scheduleMap) => {
   const today = new Date();
   const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
   endOfMonth.setHours(23, 59, 59, 999); // Set the time to the end of the day to include the last day of the month
-  console.log(endOfMonth);
   const events = [];
   for (
     let date = new Date(today);

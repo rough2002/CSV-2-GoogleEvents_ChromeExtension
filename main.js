@@ -1,10 +1,12 @@
 import Papa from "papaparse";
 
+const loader = document.querySelector(".loader");
 document
   .querySelector(".csv-input")
   .addEventListener("change", function (event) {
     const file = event.target.files[0];
     if (file) {
+      loader.style.display = "block";
       Papa.parse(file, {
         header: false, // Disable automatic header detection
         complete: function (results) {
@@ -23,3 +25,9 @@ document
       });
     }
   });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "eventsCreated") {
+    loader.textContent = "Completed ✅";
+  }
+});

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Event Generator",
+  "name": "Dispatch Planning",
   "version": "1.0.0",
   "action": { "default_popup": "index.html" },
   "permissions": ["identity"],
