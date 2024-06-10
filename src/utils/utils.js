@@ -70,16 +70,16 @@ export const createList = async (headers) => {
 
 export const getDriverTaskListId = async (headers) => {
   const taskLists = await getAllLists(headers);
-  console.log(taskLists);
+  // console.log(taskLists);
   const [driverTaskList] = taskLists?.filter(
     (list) => list.title === "Driver Tasks"
   );
   if (driverTaskList) {
-    console.log(driverTaskList.id);
+    // console.log(driverTaskList.id);
     return driverTaskList.id;
   } else {
     const newTaskListId = await createList(headers);
-    console.log(newTaskListId);
+    // console.log(newTaskListId);
     return newTaskListId;
   }
 };
@@ -255,12 +255,15 @@ export const getTasks = (events) => {
 };
 
 // function to get today's and tomorrow's date
-export const getFormattedDates = () => {
-  const today = new Date();
+export const getFormattedDates = (dateColumn) => {
+  const regex = /\d{4}-\d{2}-\d{2}/;
+  const datePart = dateColumn[0].match(regex)[0];
+  const today = new Date(datePart);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   const formatDate = (date) => {
+    console.log(date);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
@@ -277,21 +280,28 @@ export const processInBatchesWithDelay = async (
   items,
   batchSize,
   delay,
+  extendedDelay,
   callback
 ) => {
   const results = [];
+  let requestCount = 0;
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     const batchResults = await Promise.all(batch.map(callback));
     results.push(...batchResults);
-    if (i + batchSize < items.length) {
+    requestCount += batch.length;
+    console.log(requestCount);
+    if (requestCount >= 10) {
+      await new Promise((res) => setTimeout(res, extendedDelay));
+      requestCount = 0; // reset the request count after the delay
+    } else if (i + batchSize < items.length) {
       await new Promise((res) => setTimeout(res, delay));
     }
   }
   return results;
 };
-export const createEvents = async (events, headers) => {
-  return processInBatchesWithDelay(events, 3, 0, async (event) => {
+export const createEventsPromises = async (events, headers) => {
+  return processInBatchesWithDelay(events, 6, 0, 2000, async (event) => {
     const response = await fetch(
       "https://www.googleapis.com/calendar/v3/calendars/primary/events",
       {
@@ -304,8 +314,8 @@ export const createEvents = async (events, headers) => {
   });
 };
 
-export const createTasks = async (tasks, newTaskListId, headers) => {
-  return processInBatchesWithDelay(tasks, 2, 3000, async (task) => {
+export const createTasksPromises = async (tasks, newTaskListId, headers) => {
+  return processInBatchesWithDelay(tasks, 1, 1000, 0, async (task) => {
     const response = await fetch(
       `https://tasks.googleapis.com/tasks/v1/lists/${newTaskListId}/tasks`,
       {

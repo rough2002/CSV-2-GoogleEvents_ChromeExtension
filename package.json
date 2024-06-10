@@ -11,5 +11,8 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
     "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "papaparse": "^5.4.1"
   }
 }
